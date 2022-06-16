@@ -52,7 +52,7 @@ export const PostTime = styled.Text`
   align-self: flex-end;
   font-family: 'Lato-Regular';
   color: #666;
-  right: 80px;
+  right: 90px;
   top: -10px;
 `;
 

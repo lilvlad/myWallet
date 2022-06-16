@@ -29,7 +29,9 @@ const PostCard = ({item, onDelete, onLike, onPress, onEdit}) => {
   likeIcon = item.liked ? 'heart' : 'heart-outline';
   likeIconColor = item.liked ? '#2e64e5' : '#333';
 
-  if (item.likes == 1) {
+  console.log(item);
+
+  if (item.liked == 1) {
     likeText = 'Favorite';
   } else {
     likeText = 'Add to Favorites';
@@ -59,15 +61,17 @@ const PostCard = ({item, onDelete, onLike, onPress, onEdit}) => {
           source={{
             uri: userData
               ? userData.userImg ||
-                'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
-              : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+              : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
           }}
         />
         <UserName>
-          {userData ? userData.fname || 'Test' : 'Test'}{' '}
+          {userData ? userData.fname || 'New' : 'New'}{' '}
           {userData ? userData.lname || 'User' : 'User'}
         </UserName>
-        <PostTime>{moment(item.postTime.toDate()).fromNow()}</PostTime>
+        <PostTime style={{right: 60}}>
+          {moment(item.postTime.toDate()).fromNow()}
+        </PostTime>
         {/* <InteractionWrapper>
           {user.uid == item.userId ? (
             <Interaction onPress={() => onDelete(item.id)}>
@@ -88,18 +92,20 @@ const PostCard = ({item, onDelete, onLike, onPress, onEdit}) => {
       ) : null}
       {/*<PostImg source={require('../assets/posts/post-img-1.jpg')} />*/}
       <InteractionWrapper>
-        <Interaction active={item.liked} onPress={() => onLike(item.id)}>
+        <Interaction
+          active={item.liked}
+          onPress={() => onLike(item.liked, item.id)}>
           <Ionicons name={likeIcon} size={25} color={likeIconColor} />
           <InteractionText>{likeText}</InteractionText>
         </Interaction>
-        <Interaction onPress={() => onEdit(item.id)}>
+        <Interaction onPress={() => onEdit(item)}>
           <Ionicons name="pencil-sharp" size={25} />
-          <InteractionText active={item.liked}>Edit</InteractionText>
+          <InteractionText>Edit</InteractionText>
         </Interaction>
         {user.uid == item.userId ? (
           <Interaction onPress={() => onDelete(item.id)}>
             <Ionicons name="md-trash-bin" size={25} />
-            <InteractionText active={item.liked}>Delete</InteractionText>
+            <InteractionText>Delete</InteractionText>
           </Interaction>
         ) : null}
       </InteractionWrapper>

@@ -20,7 +20,7 @@ import PostCard from '../components/PostCard';
 const ProfileScreen = ({navigation, route}) => {
   const {user, logout} = useContext(AuthContext);
 
-  const [posts, setPosts] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -42,11 +42,11 @@ const ProfileScreen = ({navigation, route}) => {
             list.push({
               id: doc.id,
               userId,
-              userName: userData ? userData.fname || 'Test' : 'Test',
+              userName: userData ? userData.fname || 'New' : 'New',
               userImg: userData
                 ? userData.userImg ||
-                  'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
-                : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                  'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
               postTime: postTime,
               post,
               postImg,
@@ -84,7 +84,7 @@ const ProfileScreen = ({navigation, route}) => {
       .get()
       .then(documentSnapshot => {
         if (documentSnapshot.exists) {
-          //console.log('User Data', documentSnapshot.data());
+          console.log('User Data', documentSnapshot.data());
           setUserData(documentSnapshot.data());
         }
       });
@@ -323,12 +323,12 @@ const ProfileScreen = ({navigation, route}) => {
             source={{
               uri: userData
                 ? userData.userImg ||
-                  'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
-                : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                  'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
             }}
           />
           <Text style={styles.userName}>
-            {userData ? userData.fname || 'Test' : 'Test'}{' '}
+            {userData ? userData.fname || 'New' : 'New'}{' '}
             {userData ? userData.lname || 'User' : 'User'}
           </Text>
           {/* <Text>{route.params ? route.params.userId : user.uid}</Text> */}

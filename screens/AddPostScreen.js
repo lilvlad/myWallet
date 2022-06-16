@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   Text,
@@ -36,13 +36,31 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 
-const AddPostScreen = () => {
+const AddPostScreen = ({route, navigation}) => {
   const {user, logout} = useContext(AuthContext);
 
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [post, setPost] = useState(null);
+  const [update, setUpdate] = useState(false);
+  const [docId, setDocId] = useState(null);
+  const [postImageUri, setPostImgUri] = useState(null);
+
+  var postRef = firestore().collection('posts');
+
+  useEffect(() => {
+    const editPost = route.params?.post;
+    if (editPost) {
+      setPost(editPost.post);
+      setUpdate(true);
+      setDocId(editPost.id);
+      if (editPost.postImg) {
+        setPostImgUri(editPost.postImg);
+        setImage(editPost.postImg);
+      }
+    }
+  }, []);
 
   const handleOnChangeText = (content, valueFor) => {
     if (valueFor === 'post') setPost(content);
@@ -90,11 +108,50 @@ const AddPostScreen = () => {
     });
   };
 
+  const updatePost = async () => {
+    let imageUrl;
+    if (image == postImageUri) {
+      imageUrl = postImageUri;
+    } else {
+      imageUrl = await uploadImage();
+    }
+    console.log('Image Url: ', imageUrl);
+    console.log('Post: ', post);
+    firestore()
+      .collection('posts')
+      .doc(docId)
+      .update({
+        post: post,
+        postImg: imageUrl,
+        postTime: firestore.Timestamp.fromDate(new Date()),
+      })
+      .then(() => {
+        console.log('Post Updated!');
+        ToastAndroid.show(
+          'Your post has been updated Successfully!',
+          ToastAndroid.CENTER,
+          ToastAndroid.SHORT,
+        );
+        setPost(null);
+        setImage(null);
+        setPostImgUri(null);
+        navigation.goBack();
+      })
+      .catch(error => {
+        console.log(
+          'Something went wrong with updating this post to firestore.',
+          error,
+        );
+      })
+      .finally(() => {
+        setUpdate(false);
+      });
+  };
+
   const submitPost = async () => {
     const imageUrl = await uploadImage();
     console.log('Image Url: ', imageUrl);
     console.log('Post: ', post);
-
     firestore()
       .collection('posts')
       .add({
@@ -102,6 +159,7 @@ const AddPostScreen = () => {
         post: post,
         postImg: imageUrl,
         postTime: firestore.Timestamp.fromDate(new Date()),
+        liked: false,
       })
       .then(() => {
         console.log('Post Added!');
@@ -115,6 +173,7 @@ const AddPostScreen = () => {
           ToastAndroid.SHORT,
         );
         setPost(null);
+        navigation.goBack();
       })
       .catch(error => {
         console.log(
@@ -224,8 +283,8 @@ const AddPostScreen = () => {
                 animateFrom="right"
                 extended="true"
                 icon="check"
-                label="Post"
-                onPress={submitPost}
+                label={update ? 'Update' : 'Post'}
+                onPress={update ? updatePost : submitPost}
                 style={{backgroundColor: '#2e64e5'}}
               />
             </StatusWrapper>

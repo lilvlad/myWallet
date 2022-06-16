@@ -55,12 +55,12 @@ const CustomDrawer = props => {
                 source={{
                   uri: userData
                     ? userData.userImg ||
-                      'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
-                    : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                      'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                    : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
                 }}
               />
               <UserName style={styles.userName}>
-                {userData ? userData.fname || 'Test' : 'Test'}{' '}
+                {userData ? userData.fname || 'New' : 'New'}{' '}
                 {userData ? userData.lname || 'User' : 'User'}
               </UserName>
             </TouchableOpacity>

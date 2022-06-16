@@ -21,69 +21,12 @@ import FolderButton from '../components/FolderButton';
 import {color} from 'react-native-reanimated';
 import {SearchBar} from '../components/SearchBar';
 
-/* const Posts = [
-  {
-    id: '1',
-    userName: 'Jenny Doe',
-    userImg: require('../assets/users/user-3.jpg'),
-    postTime: '4 mins ago',
-    post: 'Hey there, this is my test for a post of my social app in React Native.',
-    postImg: require('../assets/posts/post-img-3.jpg'),
-    liked: true,
-    likes: '14',
-    comments: '5',
-  },
-  {
-    id: '2',
-    userName: 'John Doe',
-    userImg: require('../assets/users/user-1.jpg'),
-    postTime: '2 hours ago',
-    post: 'Hey there, this is my test for a post of my social app in React Native.',
-    postImg: 'none',
-    liked: false,
-    likes: '8',
-    comments: '0',
-  },
-  {
-    id: '3',
-    userName: 'Ken William',
-    userImg: require('../assets/users/user-4.jpg'),
-    postTime: '1 hours ago',
-    post: 'Hey there, this is my test for a post of my social app in React Native.',
-    postImg: require('../assets/posts/post-img-2.jpg'),
-    liked: true,
-    likes: '1',
-    comments: '0',
-  },
-  {
-    id: '4',
-    userName: 'Selina Paul',
-    userImg: require('../assets/users/user-6.jpg'),
-    postTime: '1 day ago',
-    post: 'Hey there, this is my test for a post of my social app in React Native.',
-    postImg: require('../assets/posts/post-img-4.jpg'),
-    liked: true,
-    likes: '22',
-    comments: '4',
-  },
-  {
-    id: '5',
-    userName: 'Christy Alex',
-    userImg: require('../assets/users/user-7.jpg'),
-    postTime: '2 days ago',
-    post: 'Hey there, this is my test for a post of my social app in React Native.',
-    postImg: 'none',
-    liked: false,
-    likes: '0',
-    comments: '0',
-  },
-]; */
-
 const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
   const {user, logout} = useContext(AuthContext);
   const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
+  const [refresh, setRefresh] = useState(1);
   const [userData, setUserData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [resultNotFound, setResultNotFound] = useState(false);
@@ -114,15 +57,15 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
             list.push({
               id: doc.id,
               userId,
-              userName: userData ? userData.fname || 'Test' : 'Test',
+              userName: userData ? userData.fname || 'New' : 'New',
               userImg: userData
                 ? userData.userImg ||
-                  'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
-                : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                  'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
               postTime: postTime,
               post,
               postImg,
-              liked: false,
+              liked: liked,
               likes,
             });
           });
@@ -133,8 +76,6 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
       if (loading) {
         setLoading(false);
       }
-
-      console.log('Posts: ', posts);
     } catch (e) {
       console.log(e);
     }
@@ -142,7 +83,7 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [refresh]);
 
   useEffect(() => {
     fetchPosts();
@@ -187,15 +128,42 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
     );
   };
 
-  const handleLike = item => {
-    ToastAndroid.show(
-      'Added to favorites',
-      ToastAndroid.CENTER,
-      ToastAndroid.SHORT,
-    );
+  const handleLike = async (liked, postId) => {
+    try {
+      if (!liked) {
+        const done = await firestore()
+          .collection('posts')
+          .doc(postId)
+          .set({liked: true}, {merge: true})
+          .then(() => setRefresh(refresh + 1));
+        ToastAndroid.show(
+          'Added to favorites',
+          ToastAndroid.CENTER,
+          ToastAndroid.SHORT,
+        );
+      } else {
+        const unliked = await firestore()
+          .collection('posts')
+          .doc(postId)
+          .set({liked: false}, {merge: true})
+          .then(() => setRefresh(refresh + 1));
+        ToastAndroid.show(
+          'Removed from favorites',
+          ToastAndroid.CENTER,
+          ToastAndroid.SHORT,
+        );
+      }
+    } catch (error) {
+      ToastAndroid.show(
+        'Something Went Wrong!',
+        ToastAndroid.CENTER,
+        ToastAndroid.SHORT,
+      );
+    }
   };
-  const handleEdit = postId => {
-    ToastAndroid.show('Edit pressed!', ToastAndroid.CENTER, ToastAndroid.SHORT);
+  const handleEdit = post => {
+    navigation.navigate('AddPost', {post: post});
+    // ToastAndroid.show('Edit pressed!', ToastAndroid.CENTER, ToastAndroid.SHORT);
   };
 
   const deletePost = postId => {
@@ -257,7 +225,8 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       {loading ? (
         <>
-          <FolderContainer style={{marginLeft: 15, marginTop: 50}}>
+          <FolderContainer style={{marginLeft: 15}}>
+            {/* marginTop: 50 for active search bar ^^^*/}
             <SkeletonPlaceholder>
               <View
                 style={{
@@ -399,8 +368,9 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
               style={styles.clearIcon}
             />
           </View>
-      */}
+      
           <SearchBar onChangeText={handleOnSearchInput} />
+          */}
           <FolderContainer>
             <FolderButton
               iconType={'folder-image'}

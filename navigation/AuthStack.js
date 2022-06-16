@@ -61,6 +61,8 @@ const AuthStack = () => {
             elevation: 0, // remove shadow on Android
             shadowOpacity: 0, // remove shadow on iOS
           },
+          headerShadowVisible: false,
+
           headerLeft: () => (
             <View>
               <FontAwesome.Button

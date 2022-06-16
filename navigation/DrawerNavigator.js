@@ -30,6 +30,8 @@ const DrawerNavigator = () => {
       drawerContent={props => <DrawerContent {...props} />}
       initialRouteName="Home"
       screenOptions={{
+        //here is the option that drags the whole screen
+        drawerType: 'slide',
         headerShown: false,
         drawerLabelStyle: {
           marginLeft: -25,
@@ -173,11 +175,11 @@ const HomeStackScreen = ({navigation}) => (
       name="AllPosts"
       component={AllPostsScreen}
       options={{
-        title: '',
+        title: 'All Posts',
         headerTitleAlign: 'center',
         headerShadowVisible: false,
         headerStyle: {
-          backgroundColor: '#F2F2F2',
+          backgroundColor: '#fff',
           shadowColor: '#2e64e515',
           shadowRadius: 0,
           shadowOpacity: 0,
@@ -196,12 +198,12 @@ const HomeStackScreen = ({navigation}) => (
       name="Favorite"
       component={FavoriteScreen}
       options={{
-        title: '',
+        title: 'Favorites',
         headerTitleAlign: 'center',
 
         headerStyle: {
-          backgroundColor: '#F2F2F2',
-          shadowColor: '#fff',
+          backgroundColor: '#fff',
+          shadowColor: '#2e64e515',
           shadowRadius: 0,
           shadowOpacity: 0,
           elevation: 0,

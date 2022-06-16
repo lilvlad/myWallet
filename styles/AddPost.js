@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 export const InputWrapper = styled.View`
-  justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
@@ -19,8 +18,8 @@ export const InputField = styled.TextInput`
 
 export const AddImage = styled.Image`
   width: 95%;
-  height: 250px;
-  margin-bottom: 5px;
+  height: 60%;
+  margin: 5px;
   border-radius: 10px;
 `;
 

@@ -7,6 +7,7 @@ import {AuthContext} from '../navigation/AuthProvider';
 
 const SignupScreen = ({navigation}) => {
   const [email, setEmail] = useState();
+  const [userData, setUserData] = useState();
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
 
@@ -20,7 +21,7 @@ const SignupScreen = ({navigation}) => {
         labelValue={email}
         onChangeText={userEmail => setEmail(userEmail)}
         placeholderText="Email"
-        iconType="user"
+        iconType="mail"
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
@@ -64,13 +65,13 @@ const SignupScreen = ({navigation}) => {
 
       {Platform.OS === 'android' ? (
         <View>
-          <SocialButton
+          {/* <SocialButton
             buttonTitle="Sign Up with Facebook"
             btnType="facebook"
             color="#4867aa"
             backgroundColor="#e6eaf4"
             onPress={() => {}}
-          />
+          /> */}
 
           <SocialButton
             buttonTitle="Sign Up with Google"
