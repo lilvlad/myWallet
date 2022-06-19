@@ -18,7 +18,7 @@ const FolderButton = ({
           name={iconType}
           size={84}
           color="#ECCE93CC"
-          //os ultimos digitos no final da cor para a transparencia
+          //os ultimos digitos no final da cor para a transparencia https://gist.github.com/lopspower/03fb1cc0ac9f32ef38f4
         />
         <Text style={styles.buttonText}>{buttonTitle}</Text>
       </TouchableOpacity>
