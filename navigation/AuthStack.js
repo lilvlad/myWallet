@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {View} from 'react-native';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
+import TestScreen from '../screens/TestScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import TermsofServiceScreen from '../screens/TermsofServiceScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 const Stack = createNativeStackNavigator();
@@ -52,29 +54,29 @@ const AuthStack = () => {
         component={LoginScreen}
       />
       <Stack.Screen
+        options={{headerShown: false}}
         name="Signup"
         component={SignupScreen}
-        options={({navigation}) => ({
-          title: '',
-          headerStyle: {
-            backgroundColor: '#f9fafd',
-            elevation: 0, // remove shadow on Android
-            shadowOpacity: 0, // remove shadow on iOS
-          },
-          headerShadowVisible: false,
-
-          headerLeft: () => (
-            <View>
-              <FontAwesome.Button
-                name="long-arrow-left"
-                size={25}
-                backgroundColor="#f9fafd"
-                color="#333"
-                onPress={() => navigation.navigate('Login')}
-              />
-            </View>
-          ),
-        })}
+      />
+      <Stack.Screen
+        options={{headerShown: false}}
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+      />
+      <Stack.Screen
+        options={{headerShown: false}}
+        name="Test"
+        component={TestScreen}
+      />
+      <Stack.Screen
+        options={{headerShown: false}}
+        name="Terms"
+        component={TermsofServiceScreen}
+      />
+      <Stack.Screen
+        options={{headerShown: false}}
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
       />
     </Stack.Navigator>
   );

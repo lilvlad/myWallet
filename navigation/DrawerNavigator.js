@@ -3,6 +3,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Linking, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import DrawerContent from '../components/DrawerContent';
@@ -185,11 +186,21 @@ const HomeStackScreen = ({navigation}) => (
           shadowOpacity: 0,
           elevation: 0,
         },
-
         headerBackTitleVisible: false,
-        headerBackImage: () => (
+        /* headerBackImage: () => (
           <View style={{marginLeft: 15}}>
             <Icon name="arrow-back" size={25} color="#2e64e5" />
+          </View>
+        ), */
+        headerLeft: () => (
+          <View>
+            <Icon
+              name="arrow-back"
+              size={25}
+              backgroundColor="#F2F2F2"
+              color="#333"
+              onPress={() => navigation.navigate('myWallet')}
+            />
           </View>
         ),
       }}
@@ -198,9 +209,8 @@ const HomeStackScreen = ({navigation}) => (
       name="Favorite"
       component={FavoriteScreen}
       options={{
-        title: 'Favorites',
+        title: 'Liked Posts',
         headerTitleAlign: 'center',
-
         headerStyle: {
           backgroundColor: '#fff',
           shadowColor: '#2e64e515',
@@ -208,16 +218,26 @@ const HomeStackScreen = ({navigation}) => (
           shadowOpacity: 0,
           elevation: 0,
         },
-
         headerBackTitleVisible: false,
-        headerBackImage: () => (
+        /* headerBackImage: () => (
           <View style={{marginLeft: 15}}>
             <Icon name="arrow-back" size={25} color="#2e64e5" />
+          </View>
+        ), */
+        headerLeft: () => (
+          <View>
+            <Icon
+              name="arrow-back"
+              size={25}
+              backgroundColor="#F2F2F2"
+              color="#333"
+              onPress={() => navigation.navigate('myWallet')}
+            />
           </View>
         ),
       }}
     />
-    <HomeStack.Screen
+    {/* <HomeStack.Screen
       name="Documents"
       component={DocumentsScreen}
       options={{
@@ -239,7 +259,7 @@ const HomeStackScreen = ({navigation}) => (
           </View>
         ),
       }}
-    />
+    /> */}
   </HomeStack.Navigator>
 );
 const CalendarStackScreen = ({navigation}) => (

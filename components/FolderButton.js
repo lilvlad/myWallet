@@ -16,7 +16,7 @@ const FolderButton = ({
         <MaterialCommunityIcons
           style={styles.iconStyle}
           name={iconType}
-          size={76}
+          size={84}
           color="#ECCE93CC"
           //os ultimos digitos no final da cor para a transparencia
         />
@@ -30,14 +30,15 @@ export default FolderButton;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    width: '30%',
+    //30% for 3 folders
+    width: '45%',
     backgroundColor: '#2e64e515',
     padding: 10,
     alignItems: 'center',
     borderRadius: 10,
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#666',
     fontFamily: 'Lato-Regular',

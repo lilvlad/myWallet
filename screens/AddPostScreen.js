@@ -42,7 +42,7 @@ const AddPostScreen = ({route, navigation}) => {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
-  const [post, setPost] = useState(null);
+  const [post, setPost] = useState('');
   const [update, setUpdate] = useState(false);
   const [docId, setDocId] = useState(null);
   const [postImageUri, setPostImgUri] = useState(null);
@@ -98,8 +98,6 @@ const AddPostScreen = ({route, navigation}) => {
   };
   const choosePhotoFromLibrary = () => {
     ImagePicker.openPicker({
-      width: 1200,
-      height: 780,
       cropping: true,
     }).then(image => {
       console.log(image);
@@ -248,8 +246,8 @@ const AddPostScreen = ({route, navigation}) => {
             activeOutlineColor="#2e64e5"
             maxLength={250}
           />
-
-          {/*  {post.trim() ? (
+          {/* NOT WORKING
+          {post.length || image.length >= 1 ? (
             <StatusWrapper>
               <AnimatedFAB
                 animateFrom="right"
@@ -266,8 +264,8 @@ const AddPostScreen = ({route, navigation}) => {
                 disabled={'false'}
                 animateFrom="right"
                 icon="plus"
+                extended="true"
                 label="Post"
-                onPress={submitPost}
               />
             </StatusWrapper>
           )} */}
@@ -278,12 +276,12 @@ const AddPostScreen = ({route, navigation}) => {
               <ActivityIndicator size="large" color="#0000ff" />
             </StatusWrapper>
           ) : (
-            <StatusWrapper style={{margin: 10}}>
+            <StatusWrapper>
               <AnimatedFAB
                 animateFrom="right"
                 extended="true"
-                icon="check"
-                label={update ? 'Update' : 'Post'}
+                icon="plus"
+                label="Post"
                 onPress={update ? updatePost : submitPost}
                 style={{backgroundColor: '#2e64e5'}}
               />
@@ -299,16 +297,16 @@ const AddPostScreen = ({route, navigation}) => {
           </ActionButton.Item>
           <ActionButton.Item
             buttonColor="#3498db"
-            title="Upload from Library"
+            title="Choose from Library"
             onPress={choosePhotoFromLibrary}>
             <Icon name="md-images-outline" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item
+          {/*  <ActionButton.Item
             buttonColor="#B22222"
             title="Upload Document"
             onPress={chooseDocumentFromLibrary}>
             <Icon name="md-document" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
+          </ActionButton.Item> */}
         </ActionButton>
       </TouchableWithoutFeedback>
     </>

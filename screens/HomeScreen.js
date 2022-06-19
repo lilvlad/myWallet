@@ -11,7 +11,7 @@ import {
   TextInput,
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PostCard from '../components/PostCard';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
@@ -20,16 +20,19 @@ import {AuthContext} from '../navigation/AuthProvider';
 import FolderButton from '../components/FolderButton';
 import {color} from 'react-native-reanimated';
 import {SearchBar} from '../components/SearchBar';
+import NotFound from '../components/NotFound';
 
 const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
   const {user, logout} = useContext(AuthContext);
   const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
+  const [order, setOrder] = useState(false);
   const [refresh, setRefresh] = useState(1);
   const [userData, setUserData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [resultNotFound, setResultNotFound] = useState(false);
+  const [found, setFound] = useState(false);
 
   const handleOnSearchInput = post => {
     setSearchQuery(post);
@@ -37,6 +40,89 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
       setSearchQuery('');
       setResultNotFound(false);
       return setPosts();
+    } else setResultNotFound(true);
+  };
+
+  const orderPressed = async e => {
+    try {
+      const list = [];
+      if (order == false) {
+        await firestore()
+          .collection('posts')
+          .where('userId', '==', user.uid)
+          .orderBy('postTime', 'asc')
+          .get()
+          .then(querySnapshot => {
+            if (querySnapshot.size == 0) {
+              setFound(false);
+            } else {
+              setFound(true);
+            }
+            //console.log('Total Posts: ', querySnapshot.size);
+
+            querySnapshot.forEach(doc => {
+              const {userId, post, postImg, postTime, likes, liked} =
+                doc.data();
+              list.push({
+                id: doc.id,
+                userId,
+                userName: userData ? userData.fname || 'New' : 'New',
+                userImg: userData
+                  ? userData.userImg ||
+                    'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                  : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
+                postTime: postTime,
+                post,
+                postImg,
+                liked: liked,
+                likes,
+              });
+            });
+          });
+        setOrder(true);
+      } else {
+        await firestore()
+          .collection('posts')
+          .where('userId', '==', user.uid)
+          .orderBy('postTime', 'desc')
+          .get()
+          .then(querySnapshot => {
+            if (querySnapshot.size == 0) {
+              setFound(false);
+            } else {
+              setFound(true);
+            }
+            //console.log('Total Posts: ', querySnapshot.size);
+
+            querySnapshot.forEach(doc => {
+              const {userId, post, postImg, postTime, likes, liked} =
+                doc.data();
+              list.push({
+                id: doc.id,
+                userId,
+                userName: userData ? userData.fname || 'New' : 'New',
+                userImg: userData
+                  ? userData.userImg ||
+                    'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                  : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
+                postTime: postTime,
+                post,
+                postImg,
+                liked: liked,
+                likes,
+              });
+            });
+          });
+        setOrder(false);
+      }
+
+      setPosts(list);
+
+      if (loading) {
+        setLoading(false);
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -50,7 +136,12 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
         .orderBy('postTime', 'desc')
         .get()
         .then(querySnapshot => {
-          console.log('Total Posts: ', querySnapshot.size);
+          if (querySnapshot.size == 0) {
+            setFound(false);
+          } else {
+            setFound(true);
+          }
+          //console.log('Total Posts: ', querySnapshot.size);
 
           querySnapshot.forEach(doc => {
             const {userId, post, postImg, postTime, likes, liked} = doc.data();
@@ -137,7 +228,7 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
           .set({liked: true}, {merge: true})
           .then(() => setRefresh(refresh + 1));
         ToastAndroid.show(
-          'Added to favorites',
+          'Added to liked posts',
           ToastAndroid.CENTER,
           ToastAndroid.SHORT,
         );
@@ -148,7 +239,7 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
           .set({liked: false}, {merge: true})
           .then(() => setRefresh(refresh + 1));
         ToastAndroid.show(
-          'Removed from favorites',
+          'Removed from liked posts',
           ToastAndroid.CENTER,
           ToastAndroid.SHORT,
         );
@@ -237,13 +328,24 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <View
                     style={{
-                      width: 115,
-                      height: 115,
+                      width: 175,
+                      height: 125,
                       borderRadius: 15,
                       marginRight: 15,
                     }}
                   />
                 </View>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <View
+                    style={{
+                      width: 175,
+                      height: 125,
+                      borderRadius: 15,
+                      marginRight: 15,
+                    }}
+                  />
+                </View>
+                {/* this is for 3 folders type
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <View
                     style={{
@@ -253,17 +355,7 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
                       marginRight: 15,
                     }}
                   />
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <View
-                    style={{
-                      width: 115,
-                      height: 115,
-                      borderRadius: 15,
-                      marginRight: 15,
-                    }}
-                  />
-                </View>
+                </View> */}
               </View>
             </SkeletonPlaceholder>
           </FolderContainer>
@@ -370,7 +462,7 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
           </View>
       
           <SearchBar onChangeText={handleOnSearchInput} />
-          */}
+        */}
           <FolderContainer>
             <FolderButton
               iconType={'folder-image'}
@@ -379,44 +471,69 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
             />
             <FolderButton
               iconType={'folder-heart'}
-              buttonTitle={'Favorite'}
+              buttonTitle={'Liked Posts'}
               onPress={() => navigation.navigate('Favorite')}
             />
-            <FolderButton
+            {/*  <FolderButton
               iconType={'folder-google-drive'}
               buttonTitle={'Documents'}
               onPress={() => navigation.navigate('Documents')}
-            />
+            /> */}
           </FolderContainer>
           <Container>
-            <Text
+            <View
               style={{
-                marginBottom: 10,
-                fontSize: 18,
-                color: '#000',
-                fontWeight: 'bold',
+                marginBottom: 5,
+                flexDirection: 'row',
+                alignItems: 'center',
               }}>
-              Total Posts
-            </Text>
-            <FlatList
-              data={posts}
-              renderItem={({item}) => (
-                <PostCard
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
-                  onLike={handleLike}
-                  onEdit={handleEdit}
-                  onPress={() =>
-                    navigation.navigate('HomeProfile', {userId: item.userId})
-                  }
-                />
-              )}
-              keyExtractor={item => item.id}
-              ListHeaderComponent={ListHeader}
-              ListFooterComponent={ListHeader}
-              showsVerticalScrollIndicator={false}
-            />
+              <Text
+                style={{
+                  marginRight: -30,
+                  fontSize: 18,
+                  color: '#000',
+                  fontWeight: 'bold',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  flex: 1,
+                }}>
+                Total Posts
+              </Text>
+              <MaterialIcons
+                name={'format-list-numbered-rtl'}
+                /*  name={'filter-list'} */
+                size={28}
+                color={'#000'}
+                style={{justifyContent: 'flex-end'}}
+                onPress={() => orderPressed()}
+              />
+            </View>
+            {found == true ? (
+              <FlatList
+                data={posts}
+                renderItem={({item}) => (
+                  <PostCard
+                    key={item.id}
+                    item={item}
+                    onDelete={handleDelete}
+                    onLike={handleLike}
+                    onEdit={handleEdit}
+                    onPress={() =>
+                      navigation.navigate('HomeProfile', {userId: item.userId})
+                    }
+                  />
+                )}
+                keyExtractor={item => item.id}
+                ListHeaderComponent={ListHeader}
+                ListFooterComponent={ListHeader}
+                showsVerticalScrollIndicator={false}
+              />
+            ) : (
+              <NotFound
+                notfoundText={'No posts found yet'}
+                iconName={'ios-sad'}
+              />
+            )}
           </Container>
         </>
       )}

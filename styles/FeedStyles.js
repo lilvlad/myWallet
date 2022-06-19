@@ -10,14 +10,15 @@ export const Container = styled.View`
 export const FolderContainer = styled.View`
   flex-direction: row;
   justify-content: space-evenly;
-  background-color: #fff;
+  z-index: 100;
 `;
 
 export const Card = styled.View`
-  background-color: #f8f8f8;
+  background-color: #f2f2f2;
   width: 100%;
   margin-bottom: 20px;
   border-radius: 10px;
+  z-index: -1;
 `;
 
 export const UserInfo = styled.View`
@@ -31,6 +32,8 @@ export const UserImg = styled.Image`
   height: 50px;
   border-radius: 25px;
   margin-right: 10px;
+  align-self: center;
+  z-index: 10;
 `;
 
 export const UserInfoText = styled.View`
@@ -49,10 +52,10 @@ export const UserName = styled.Text`
 
 export const PostTime = styled.Text`
   font-size: 12px;
-  align-self: flex-end;
+  align-self: flex-start;
   font-family: 'Lato-Regular';
   color: #666;
-  right: 90px;
+  /* right: 90px; */
   top: -10px;
 `;
 
@@ -82,14 +85,14 @@ export const Divider = styled.View`
 export const InteractionWrapper = styled.View`
   flex-direction: row;
   justify-content: space-around;
-  padding: 15px;
+  padding: 10px;
 `;
 
 export const Interaction = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: center;
   border-radius: 5px;
-  padding: 2px 5px;
+  padding: 3px 10px;
   background-color: ${props => (props.active ? '#2e64e515' : 'transparent')};
 `;
 

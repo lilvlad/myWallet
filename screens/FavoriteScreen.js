@@ -20,25 +20,16 @@ import {AuthContext} from '../navigation/AuthProvider';
 import FolderButton from '../components/FolderButton';
 import {color} from 'react-native-reanimated';
 import {SearchBar} from '../components/SearchBar';
+import NotFound from '../components/NotFound';
 
 const FavoriteScreen = ({navigation, route, value, onClear, onChangeText}) => {
   const {user, logout} = useContext(AuthContext);
   const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [found, setFound] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [refresh, setRefresh] = useState(1);
   const [userData, setUserData] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [resultNotFound, setResultNotFound] = useState(false);
-
-  const handleOnSearchInput = post => {
-    setSearchQuery(post);
-    if (!post.trim()) {
-      setSearchQuery('');
-      setResultNotFound(false);
-      return setPosts();
-    }
-  };
 
   const fetchPosts = async () => {
     try {
@@ -52,6 +43,11 @@ const FavoriteScreen = ({navigation, route, value, onClear, onChangeText}) => {
         .get()
         .then(querySnapshot => {
           console.log('Total Posts: ', querySnapshot.size);
+          if (querySnapshot.size == 0) {
+            setFound(false);
+          } else {
+            setFound(true);
+          }
 
           querySnapshot.forEach(doc => {
             const {userId, post, postImg, postTime, likes, liked} = doc.data();
@@ -71,7 +67,6 @@ const FavoriteScreen = ({navigation, route, value, onClear, onChangeText}) => {
             });
           });
         });
-
       setPosts(list);
 
       if (loading) {
@@ -297,25 +292,32 @@ const FavoriteScreen = ({navigation, route, value, onClear, onChangeText}) => {
       ) : (
         <>
           <Container>
-            <FlatList
-              data={posts}
-              renderItem={({item}) => (
-                <PostCard
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
-                  onLike={handleLike}
-                  onEdit={handleEdit}
-                  onPress={() =>
-                    navigation.navigate('HomeProfile', {userId: item.userId})
-                  }
-                />
-              )}
-              keyExtractor={item => item.id}
-              ListHeaderComponent={ListHeader}
-              ListFooterComponent={ListHeader}
-              showsVerticalScrollIndicator={false}
-            />
+            {found == true ? (
+              <FlatList
+                data={posts}
+                renderItem={({item}) => (
+                  <PostCard
+                    key={item.id}
+                    item={item}
+                    onDelete={handleDelete}
+                    onLike={handleLike}
+                    onEdit={handleEdit}
+                    onPress={() =>
+                      navigation.navigate('HomeProfile', {userId: item.userId})
+                    }
+                  />
+                )}
+                keyExtractor={item => item.id}
+                ListHeaderComponent={ListHeader}
+                ListFooterComponent={ListHeader}
+                showsVerticalScrollIndicator={false}
+              />
+            ) : (
+              <NotFound
+                notfoundText={'No liked posts yet'}
+                iconName={'heart-dislike'}
+              />
+            )}
           </Container>
         </>
       )}

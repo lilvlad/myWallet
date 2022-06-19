@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Alert,
   ToastAndroid,
+  FlatList,
 } from 'react-native';
 import FormButton from '../components/FormButton';
 import {AuthContext} from '../navigation/AuthProvider';
@@ -16,14 +17,112 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 import firestore from '@react-native-firebase/firestore';
 import PostCard from '../components/PostCard';
+import NotFound from '../components/NotFound';
+import {Container} from '../styles/FeedStyles';
 
 const ProfileScreen = ({navigation, route}) => {
   const {user, logout} = useContext(AuthContext);
-
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState('');
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
+  const [order, setOrder] = useState(false);
+  const [refresh, setRefresh] = useState(1);
   const [userData, setUserData] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [resultNotFound, setResultNotFound] = useState(false);
+  const [found, setFound] = useState(false);
+
+  const handleOnSearchInput = post => {
+    setSearchQuery(post);
+    if (!post.trim()) {
+      setSearchQuery('');
+      setResultNotFound(false);
+      return setPosts();
+    } else setResultNotFound(true);
+  };
+
+  const orderPressed = async e => {
+    try {
+      const list = [];
+      if (order == false) {
+        await firestore()
+          .collection('posts')
+          .where('userId', '==', user.uid)
+          .orderBy('postTime', 'asc')
+          .get()
+          .then(querySnapshot => {
+            if (querySnapshot.size == 0) {
+              setFound(false);
+            } else {
+              setFound(true);
+            }
+            //console.log('Total Posts: ', querySnapshot.size);
+
+            querySnapshot.forEach(doc => {
+              const {userId, post, postImg, postTime, likes, liked} =
+                doc.data();
+              list.push({
+                id: doc.id,
+                userId,
+                userName: userData ? userData.fname || 'New' : 'New',
+                userImg: userData
+                  ? userData.userImg ||
+                    'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                  : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
+                postTime: postTime,
+                post,
+                postImg,
+                liked: liked,
+                likes,
+              });
+            });
+          });
+        setOrder(true);
+      } else {
+        await firestore()
+          .collection('posts')
+          .where('userId', '==', user.uid)
+          .orderBy('postTime', 'desc')
+          .get()
+          .then(querySnapshot => {
+            if (querySnapshot.size == 0) {
+              setFound(false);
+            } else {
+              setFound(true);
+            }
+            //console.log('Total Posts: ', querySnapshot.size);
+
+            querySnapshot.forEach(doc => {
+              const {userId, post, postImg, postTime, likes, liked} =
+                doc.data();
+              list.push({
+                id: doc.id,
+                userId,
+                userName: userData ? userData.fname || 'New' : 'New',
+                userImg: userData
+                  ? userData.userImg ||
+                    'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                  : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
+                postTime: postTime,
+                post,
+                postImg,
+                liked: liked,
+                likes,
+              });
+            });
+          });
+        setOrder(false);
+      }
+
+      setPosts(list);
+
+      if (loading) {
+        setLoading(false);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -35,7 +134,12 @@ const ProfileScreen = ({navigation, route}) => {
         .orderBy('postTime', 'desc')
         .get()
         .then(querySnapshot => {
-          console.log('Total Posts: ', querySnapshot.size);
+          if (querySnapshot.size == 0) {
+            setFound(false);
+          } else {
+            setFound(true);
+          }
+          //console.log('Total Posts: ', querySnapshot.size);
 
           querySnapshot.forEach(doc => {
             const {userId, post, postImg, postTime, likes, liked} = doc.data();
@@ -50,7 +154,7 @@ const ProfileScreen = ({navigation, route}) => {
               postTime: postTime,
               post,
               postImg,
-              liked: false,
+              liked: liked,
               likes,
             });
           });
@@ -61,8 +165,6 @@ const ProfileScreen = ({navigation, route}) => {
       if (loading) {
         setLoading(false);
       }
-
-      console.log('Posts: ', posts);
     } catch (e) {
       console.log(e);
     }
@@ -70,7 +172,7 @@ const ProfileScreen = ({navigation, route}) => {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [refresh]);
 
   useEffect(() => {
     fetchPosts();
@@ -84,7 +186,7 @@ const ProfileScreen = ({navigation, route}) => {
       .get()
       .then(documentSnapshot => {
         if (documentSnapshot.exists) {
-          console.log('User Data', documentSnapshot.data());
+          //console.log('User Data', documentSnapshot.data());
           setUserData(documentSnapshot.data());
         }
       });
@@ -115,8 +217,46 @@ const ProfileScreen = ({navigation, route}) => {
     );
   };
 
+  const handleLike = async (liked, postId) => {
+    try {
+      if (!liked) {
+        const done = await firestore()
+          .collection('posts')
+          .doc(postId)
+          .set({liked: true}, {merge: true})
+          .then(() => setRefresh(refresh + 1));
+        ToastAndroid.show(
+          'Added to favorites',
+          ToastAndroid.CENTER,
+          ToastAndroid.SHORT,
+        );
+      } else {
+        const unliked = await firestore()
+          .collection('posts')
+          .doc(postId)
+          .set({liked: false}, {merge: true})
+          .then(() => setRefresh(refresh + 1));
+        ToastAndroid.show(
+          'Removed from favorites',
+          ToastAndroid.CENTER,
+          ToastAndroid.SHORT,
+        );
+      }
+    } catch (error) {
+      ToastAndroid.show(
+        'Something Went Wrong!',
+        ToastAndroid.CENTER,
+        ToastAndroid.SHORT,
+      );
+    }
+  };
+  const handleEdit = post => {
+    navigation.navigate('AddPost', {post: post});
+    // ToastAndroid.show('Edit pressed!', ToastAndroid.CENTER, ToastAndroid.SHORT);
+  };
+
   const deletePost = postId => {
-    console.log('Current Post Id: ', postId);
+    //console.log('Current Post Id: ', postId);
 
     firestore()
       .collection('posts')
@@ -162,7 +302,6 @@ const ProfileScreen = ({navigation, route}) => {
           ToastAndroid.CENTER,
           ToastAndroid.SHORT,
         );
-
         setDeleted(true);
       })
       .catch(e => console.log('Error deleting posst.', e));
@@ -311,13 +450,7 @@ const ProfileScreen = ({navigation, route}) => {
           </ScrollView>
         </>
       ) : (
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={{
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          showsVerticalScrollIndicator={false}>
+        <View style={styles.container} showsVerticalScrollIndicator={false}>
           <Image
             style={styles.userImg}
             source={{
@@ -355,10 +488,33 @@ const ProfileScreen = ({navigation, route}) => {
             </View>
           </View>
 
-          {posts.map(item => (
+          {/* {posts.map(item => (
             <PostCard key={item.id} item={item} onDelete={handleDelete} />
-          ))}
-        </ScrollView>
+          ))} */}
+          {found == true ? (
+            <FlatList
+              data={posts}
+              renderItem={({item}) => (
+                <PostCard
+                  key={item.id}
+                  item={item}
+                  onDelete={handleDelete}
+                  onLike={handleLike}
+                  onEdit={handleEdit}
+                  onPress={() =>
+                    navigation.navigate('HomeProfile', {userId: item.userId})
+                  }
+                />
+              )}
+              keyExtractor={item => item.id}
+              ListHeaderComponent={ListHeader}
+              ListFooterComponent={ListHeader}
+              showsVerticalScrollIndicator={false}
+            />
+          ) : (
+            <NotFound notfoundText={'No posts found'} iconName={'ios-sad'} />
+          )}
+        </View>
       )}
     </SafeAreaView>
   );
@@ -371,6 +527,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   userImg: {
     height: 150,

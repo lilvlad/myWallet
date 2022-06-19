@@ -8,8 +8,9 @@ import {
   StyleSheet,
   Alert,
   ToastAndroid,
-  Keyboard,
+  Touchable,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -26,12 +27,29 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 
-const EditProfileScreen = () => {
+const EditProfileScreen = ({navigation}) => {
   const {user, logout} = useContext(AuthContext);
+  const {verified, setVerified} = useContext(AuthContext);
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [userData, setUserData] = useState(null);
+
+  const [data, setData] = React.useState({
+    mail: '',
+    password: '',
+    check_textInputChange: false,
+    secureTextEntry: true,
+    isValidMail: true,
+    isValidPassword: true,
+  });
+
+  const updateSecureTextEntry = () => {
+    setData({
+      ...data,
+      secureTextEntry: !data.secureTextEntry,
+    });
+  };
 
   const getUser = async () => {
     const currentUser = await firestore()
@@ -66,6 +84,7 @@ const EditProfileScreen = () => {
         userImg: imgUrl,
       })
       .then(() => {
+        navigation.goBack();
         console.log('User Updated!');
         /*Alert.alert(
           'Profile Updated!',
@@ -195,135 +214,216 @@ const EditProfileScreen = () => {
   bs = React.createRef();
   fall = new Animated.Value(1);
 
-  const handleKeyboardClose = () => {
-    Keyboard.dismiss();
-    this.bs.current.snapTo(1);
-  };
-
   return (
-    <>
-      <View style={styles.container}>
-        <BottomSheet
-          style={{top: 250}}
-          ref={this.bs}
-          snapPoints={[330, -5]}
-          renderContent={this.renderInner}
-          renderHeader={this.renderHeader}
-          initialSnap={1}
-          callbackNode={this.fall}
-          enabledGestureInteraction={true}
-        />
-        <TouchableWithoutFeedback onPress={handleKeyboardClose}>
-          <Animated.View
-            style={{
-              margin: 20,
-              opacity: Animated.add(0.1, Animated.multiply(this.fall, 1.0)),
-            }}>
-            <View style={{alignItems: 'center'}}>
-              <TouchableOpacity onPress={() => this.bs.current.snapTo(0)}>
+    <View style={styles.container}>
+      <BottomSheet
+        ref={this.bs}
+        snapPoints={[330, -5]}
+        renderContent={this.renderInner}
+        renderHeader={this.renderHeader}
+        initialSnap={1}
+        callbackNode={this.fall}
+        enabledGestureInteraction={true}
+      />
+      <Animated.View
+        style={{
+          margin: 20,
+          opacity: Animated.add(0.1, Animated.multiply(this.fall, 1.0)),
+        }}>
+        <View style={{alignItems: 'center'}}>
+          <TouchableOpacity onPress={() => this.bs.current.snapTo(0)}>
+            <View
+              style={{
+                height: 100,
+                width: 100,
+                borderRadius: 15,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <ImageBackground
+                source={{
+                  uri: image
+                    ? image
+                    : userData
+                    ? userData.userImg ||
+                      'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                    : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
+                }}
+                style={{height: 100, width: 100}}
+                imageStyle={{borderRadius: 15}}>
                 <View
                   style={{
-                    height: 100,
-                    width: 100,
-                    borderRadius: 15,
+                    flex: 1,
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <ImageBackground
-                    source={{
-                      uri: image
-                        ? image
-                        : userData
-                        ? userData.userImg ||
-                          'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
-                        : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
+                  <MaterialCommunityIcons
+                    name="camera"
+                    size={35}
+                    color="#000"
+                    style={{
+                      opacity: 0.7,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderWidth: 1,
+                      borderColor: '#000',
+                      borderRadius: 10,
                     }}
-                    style={{height: 100, width: 100}}
-                    imageStyle={{borderRadius: 15}}>
-                    <View
-                      style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <MaterialCommunityIcons
-                        name="camera"
-                        size={35}
-                        color="#000"
-                        style={{
-                          opacity: 0.7,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          borderWidth: 1,
-                          borderColor: '#000',
-                          borderRadius: 10,
-                        }}
-                      />
-                    </View>
-                  </ImageBackground>
+                  />
                 </View>
-              </TouchableOpacity>
-              <Text style={{marginTop: 10, fontSize: 18, fontWeight: 'bold'}}>
-                {userData ? userData.fname : ''}{' '}
-                {userData ? userData.lname : ''}
-              </Text>
-              <Text>User ID: {user.uid}</Text>
+              </ImageBackground>
             </View>
-
-            <View style={styles.action}>
-              <FontAwesome name="envelope-o" color="#333333" size={20} />
+          </TouchableOpacity>
+          <Text style={{marginTop: 10, fontSize: 18, fontWeight: 'bold'}}>
+            {userData ? userData.fname : ''} {userData ? userData.lname : ''}
+          </Text>
+          <Text>User ID: {user.uid}</Text>
+        </View>
+        <View style={styles.action}>
+          {auth().currentUser.emailVerified ? (
+            <>
+              <MaterialCommunityIcons
+                name="email-check-outline"
+                color="#333333"
+                size={25}
+                onPress={() =>
+                  ToastAndroid.show(
+                    'Email verified',
+                    ToastAndroid.CENTER,
+                    ToastAndroid.SHORT,
+                  )
+                }
+              />
               <TextInput
-                placeholder="Email"
+                placeholder="No Email Found"
                 placeholderTextColor="#666666"
                 value={userData ? userData.email : ''}
                 style={styles.textInput}
                 editable={false}
               />
-            </View>
-            <View style={styles.action}>
-              <FontAwesome name="user-circle-o" color="#333333" size={20} />
-              <TextInput
-                placeholder="First Name"
-                placeholderTextColor="#666666"
-                autoCorrect={false}
-                value={userData ? userData.fname : ''}
-                onChangeText={txt => setUserData({...userData, fname: txt})}
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.action}>
-              <FontAwesome name="id-badge" color="#333333" size={20} />
-              <TextInput
-                placeholder="Last Name"
-                placeholderTextColor="#666666"
-                value={userData ? userData.lname : ''}
-                onChangeText={txt => setUserData({...userData, lname: txt})}
-                autoCorrect={false}
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.action}>
-              <Ionicons
-                name="ios-clipboard-outline"
+            </>
+          ) : (
+            <>
+              <MaterialCommunityIcons
+                name="email-remove-outline"
                 color="#333333"
-                size={20}
+                size={25}
+                onPress={() =>
+                  ToastAndroid.show(
+                    'Email not verified',
+                    ToastAndroid.CENTER,
+                    ToastAndroid.SHORT,
+                  )
+                }
               />
+
               <TextInput
-                multiline
-                numberOfLines={3}
-                placeholder="About Me"
+                placeholder="No Email Found"
                 placeholderTextColor="#666666"
-                value={userData ? userData.about : ''}
-                onChangeText={txt => setUserData({...userData, about: txt})}
-                autoCorrect={true}
-                style={[styles.textInput, {height: 40}]}
+                value={userData ? userData.email : ''}
+                style={styles.textInput}
+                editable={false}
               />
-            </View>
-            <FormButton buttonTitle="Update" onPress={handleUpdate} />
-          </Animated.View>
-        </TouchableWithoutFeedback>
-      </View>
-    </>
+            </>
+          )}
+        </View>
+
+        <View style={styles.action}>
+          {data.secureTextEntry ? (
+            <MaterialCommunityIcons
+              name="lock-outline"
+              color="#333333"
+              size={25}
+            />
+          ) : (
+            <MaterialCommunityIcons
+              name="lock-open-outline"
+              color="#333333"
+              size={25}
+            />
+          )}
+          <TextInput
+            value={userData ? userData.password : ''}
+            placeholder="No Password"
+            placeholderTextColor="#666"
+            secureTextEntry={data.secureTextEntry ? true : false}
+            style={styles.textInput}
+            editable={false}
+          />
+          <TouchableOpacity onPress={updateSecureTextEntry}>
+            {data.secureTextEntry ? (
+              <Feather
+                name="eye-off"
+                color="grey"
+                size={22}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              />
+            ) : (
+              <Feather
+                name="eye"
+                color="grey"
+                size={22}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.action}>
+          <MaterialCommunityIcons
+            name="account-outline"
+            color="#333333"
+            size={25}
+          />
+          <TextInput
+            placeholder="First Name"
+            placeholderTextColor="#666666"
+            autoCorrect={false}
+            value={userData ? userData.fname : ''}
+            onChangeText={txt => setUserData({...userData, fname: txt})}
+            style={styles.textInput}
+          />
+        </View>
+        <View style={styles.action}>
+          <MaterialCommunityIcons
+            name="account-multiple-outline"
+            color="#333333"
+            size={25}
+          />
+          <TextInput
+            placeholder="Last Name"
+            placeholderTextColor="#666666"
+            value={userData ? userData.lname : ''}
+            onChangeText={txt => setUserData({...userData, lname: txt})}
+            autoCorrect={false}
+            style={styles.textInput}
+          />
+        </View>
+        <View style={styles.action}>
+          <MaterialCommunityIcons
+            name="clipboard-account-outline"
+            color="#333333"
+            size={25}
+          />
+          <TextInput
+            multiline
+            numberOfLines={3}
+            placeholder="About Me"
+            placeholderTextColor="#666666"
+            value={userData ? userData.about : ''}
+            onChangeText={txt => setUserData({...userData, about: txt})}
+            autoCorrect={true}
+            style={[styles.textInput, {height: 40}]}
+          />
+        </View>
+        <FormButton buttonTitle="Update" onPress={handleUpdate} />
+      </Animated.View>
+    </View>
   );
 };
 

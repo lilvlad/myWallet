@@ -14,6 +14,7 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import {Container, FolderContainer} from '../styles/FeedStyles';
 import {AuthContext} from '../navigation/AuthProvider';
+import NotFound from '../components/NotFound';
 
 const AllPostsScreen = ({navigation, route, value, onClear, onChangeText}) => {
   const {user, logout} = useContext(AuthContext);
@@ -22,6 +23,7 @@ const AllPostsScreen = ({navigation, route, value, onClear, onChangeText}) => {
   const [deleted, setDeleted] = useState(false);
   const [refresh, setRefresh] = useState(1);
   const [userData, setUserData] = useState(null);
+  const [found, setFound] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [resultNotFound, setResultNotFound] = useState(false);
 
@@ -45,7 +47,11 @@ const AllPostsScreen = ({navigation, route, value, onClear, onChangeText}) => {
         .get()
         .then(querySnapshot => {
           console.log('Total Posts: ', querySnapshot.size);
-
+          if (querySnapshot.size == 0) {
+            setFound(false);
+          } else {
+            setFound(true);
+          }
           querySnapshot.forEach(doc => {
             const {userId, post, postImg, postTime, likes, liked} = doc.data();
             list.push({
@@ -220,47 +226,6 @@ const AllPostsScreen = ({navigation, route, value, onClear, onChangeText}) => {
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       {loading ? (
         <>
-          <FolderContainer style={{marginLeft: 15, marginTop: 50}}>
-            <SkeletonPlaceholder>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-evenly',
-                  marginBottom: 60,
-                }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <View
-                    style={{
-                      width: 115,
-                      height: 115,
-                      borderRadius: 15,
-                      marginRight: 15,
-                    }}
-                  />
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <View
-                    style={{
-                      width: 115,
-                      height: 115,
-                      borderRadius: 15,
-                      marginRight: 15,
-                    }}
-                  />
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <View
-                    style={{
-                      width: 115,
-                      height: 115,
-                      borderRadius: 15,
-                      marginRight: 15,
-                    }}
-                  />
-                </View>
-              </View>
-            </SkeletonPlaceholder>
-          </FolderContainer>
           <ScrollView
             style={{flex: 1, margin: 10}}
             contentContainerStyle={{alignItems: 'center'}}
@@ -374,25 +339,32 @@ const AllPostsScreen = ({navigation, route, value, onClear, onChangeText}) => {
               }}>
               All Posts
             </Text> */}
-            <FlatList
-              data={posts}
-              renderItem={({item}) => (
-                <PostCard
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
-                  onLike={handleLike}
-                  onEdit={handleEdit}
-                  onPress={() =>
-                    navigation.navigate('HomeProfile', {userId: item.userId})
-                  }
-                />
-              )}
-              keyExtractor={item => item.id}
-              ListHeaderComponent={ListHeader}
-              ListFooterComponent={ListHeader}
-              showsVerticalScrollIndicator={false}
-            />
+            {found == true ? (
+              <FlatList
+                data={posts}
+                renderItem={({item}) => (
+                  <PostCard
+                    key={item.id}
+                    item={item}
+                    onDelete={handleDelete}
+                    onLike={handleLike}
+                    onEdit={handleEdit}
+                    onPress={() =>
+                      navigation.navigate('HomeProfile', {userId: item.userId})
+                    }
+                  />
+                )}
+                keyExtractor={item => item.id}
+                ListHeaderComponent={ListHeader}
+                ListFooterComponent={ListHeader}
+                showsVerticalScrollIndicator={false}
+              />
+            ) : (
+              <NotFound
+                notfoundText={'No posts found yet'}
+                iconName={'ios-sad'}
+              />
+            )}
           </Container>
         </>
       )}

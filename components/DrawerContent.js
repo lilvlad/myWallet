@@ -6,6 +6,8 @@ import {
   TouchableRipple,
   Switch,
   Text,
+  ScrollView,
+  SafeAreaView,
 } from 'react-native-paper';
 import {UserImg, UserName} from '../styles/FeedStyles';
 import {
@@ -14,6 +16,7 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import {Linking} from 'react-native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
@@ -39,6 +42,9 @@ const DrawerContent = (props, route) => {
           setUserData(documentSnapshot.data());
         }
       });
+    if (loading) {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -51,22 +57,52 @@ const DrawerContent = (props, route) => {
         <Drawer.Section style={styles.drawerSection}>
           <View style={styles.userInfoSection}>
             {/* profile user */}
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('Profile')}>
-              <UserImg
-                style={styles.userImg}
-                source={{
-                  uri: userData
-                    ? userData.userImg ||
-                      'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
-                    : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
-                }}
-              />
-              <UserName style={styles.userName}>
-                {userData ? userData.fname || 'New' : 'New'}{' '}
-                {userData ? userData.lname || 'User' : 'User'}
-              </UserName>
-            </TouchableOpacity>
+            {loading ? (
+              <>
+                <SkeletonPlaceholder>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <View
+                      style={{
+                        width: 150,
+                        height: 150,
+                        borderRadius: 100,
+                      }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginTop: 10,
+                    }}>
+                    <View style={{width: 150, height: 25, borderRadius: 4}} />
+                  </View>
+                </SkeletonPlaceholder>
+              </>
+            ) : (
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate('Profile')}>
+                <UserImg
+                  style={styles.userImg}
+                  source={{
+                    uri: userData
+                      ? userData.userImg ||
+                        'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                      : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
+                  }}
+                />
+                <UserName style={styles.userName}>
+                  {userData ? userData.fname || 'New' : 'New'}{' '}
+                  {userData ? userData.lname || 'User' : 'User'}
+                </UserName>
+              </TouchableOpacity>
+            )}
           </View>
         </Drawer.Section>
         <View style={styles.drawerContent}>
@@ -87,12 +123,12 @@ const DrawerContent = (props, route) => {
               icon={({color, size}) => (
                 <Icon name="folder-heart" color={color} size={size} />
               )}
-              label="Favorites"
+              label="Liked Posts"
               onPress={() => {
                 props.navigation.navigate('Favorite');
               }}
             />
-            <DrawerItem
+            {/* <DrawerItem
               icon={({color, size}) => (
                 <Icon name="folder-google-drive" color={color} size={size} />
               )}
@@ -100,7 +136,7 @@ const DrawerContent = (props, route) => {
               onPress={() => {
                 props.navigation.navigate('Documents');
               }}
-            />
+            /> */}
           </Drawer.Section>
         </View>
       </DrawerContentScrollView>

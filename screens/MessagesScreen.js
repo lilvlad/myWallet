@@ -7,8 +7,8 @@ const MessagesScreen = () => {
     <ScrollView
       style={{flex: 1, margin: 15}}
       contentContainerStyle={{alignItems: 'center'}}>
-      {/* folders skeleton
-       <SkeletonPlaceholder>
+      {/* folders skeleton */}
+      <SkeletonPlaceholder>
         <View
           style={{
             alignItems: 'center',
@@ -16,17 +16,17 @@ const MessagesScreen = () => {
             justifyContent: 'space-evenly',
           }}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={{width: 100, height: 100, borderRadius: 15}} />
+            <View style={{width: 125, height: 125, borderRadius: 15}} />
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={{width: 100, height: 100, borderRadius: 15}} />
+            <View style={{width: 125, height: 125, borderRadius: 15}} />
           </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          {/* <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <View style={{width: 100, height: 100, borderRadius: 15}} />
-          </View>
+          </View> */}
         </View>
-      </SkeletonPlaceholder> */}
-      <SkeletonPlaceholder>
+      </SkeletonPlaceholder>
+      {/* <SkeletonPlaceholder>
         <View
           style={{
             flexDirection: 'row',
@@ -98,7 +98,7 @@ const MessagesScreen = () => {
             style={{marginTop: 6, width: 350, height: 200, borderRadius: 4}}
           />
         </View>
-      </SkeletonPlaceholder>
+      </SkeletonPlaceholder> */}
     </ScrollView>
   );
 };

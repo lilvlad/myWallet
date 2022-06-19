@@ -16,12 +16,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
     width: '100%',
-    height: windowHeight / 15,
+    height: windowHeight / 14,
     backgroundColor: '#2e64e5',
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 3,
+    borderRadius: 5,
   },
   buttonText: {
     fontSize: 18,
