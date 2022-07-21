@@ -4,6 +4,7 @@ import AuthStack from './AuthStack';
 import {AuthContext} from './AuthProvider';
 import auth from '@react-native-firebase/auth';
 import AppStack from './AppStack';
+import RNBootSplash from 'react-native-bootsplash';
 
 const Routes = () => {
   const {user, setUser} = useContext(AuthContext);
@@ -22,7 +23,7 @@ const Routes = () => {
   if (initializing) return null;
 
   return (
-    <NavigationContainer>
+    <NavigationContainer onReady={() => RNBootSplash.hide({fade: true})}>
       {user ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );

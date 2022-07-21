@@ -27,6 +27,7 @@ export const StatusWrapper = styled.View`
   justify-content: center;
   align-items: center;
   top: 30px;
+  margin-vertical: 10px;
 `;
 
 export const SubmitBtn = styled.TouchableOpacity`

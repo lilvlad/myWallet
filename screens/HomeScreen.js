@@ -21,6 +21,7 @@ import FolderButton from '../components/FolderButton';
 import {color} from 'react-native-reanimated';
 import {SearchBar} from '../components/SearchBar';
 import NotFound from '../components/NotFound';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
   const {user, logout} = useContext(AuthContext);
@@ -531,6 +532,8 @@ const HomeScreen = ({navigation, route, value, onClear, onChangeText}) => {
             ) : (
               <NotFound
                 notfoundText={'No posts found yet'}
+                notfoundDescription={'To make your first post go to the '}
+                iconShow={true}
                 iconName={'ios-sad'}
               />
             )}

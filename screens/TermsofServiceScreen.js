@@ -68,7 +68,7 @@ const TermsofServiceScreen = ({navigation}) => {
                   style={{
                     fontSize: 18,
                     marginBottom: 10,
-
+                    color: '#777',
                     textAlign: 'center',
                     justifyContent: 'center',
                   }}>

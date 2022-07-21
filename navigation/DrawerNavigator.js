@@ -39,6 +39,7 @@ const DrawerNavigator = () => {
           fontFamily: 'Roboto-Medium',
           fontSize: 15,
         },
+        drawerActiveTintColor: '#2E64E5',
       }}>
       <Drawer.Screen
         name="Home"
@@ -269,14 +270,12 @@ const CalendarStackScreen = ({navigation}) => (
         backgroundColor: '#2e64e5',
       },
       headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
     }}>
     <CalendarStack.Screen
       name="Calendar Screen"
       component={CalendarScreen}
       options={{
+        title: 'Calendar',
         headerLeft: () => (
           <Icon
             style={{marginRight: 10}}
@@ -293,24 +292,31 @@ const CalendarStackScreen = ({navigation}) => (
 const ProfileStackScreen = ({navigation}) => (
   <ProfileStack.Navigator
     screenOptions={{
+      headerTitleStyle: {
+        color: '#000',
+      },
       headerStyle: {
         backgroundColor: '#2e64e5',
-      },
-      //headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
       },
     }}>
     <ProfileStack.Screen
       name="Profile Screen"
       component={ProfileScreen}
       options={{
-        headerShown: false,
+        headerShown: true,
+        title: 'Profile',
+        headerShadowVisible: false,
+        headerStyle: {
+          shadowColor: '#fff',
+          elevation: 0,
+        },
         headerLeft: () => (
           <Icon
+            style={{marginRight: 10}}
             name="ios-menu"
             size={25}
-            backgroundColor="#2e64e5"
+            backgroundColor="#fff"
+            color="#000"
             onPress={() => navigation.openDrawer()}></Icon>
         ),
       }}

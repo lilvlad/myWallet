@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, StyleSheet, Animated} from 'react-native';
 import {PinchGestureHandler, State} from 'react-native-gesture-handler';
+import {windowWidth} from '../utils/Dimentions';
 
 //this is for "loading effect". Display a default image while the actual post image is loading from the firebase.
 class ProgressiveImage extends React.Component {

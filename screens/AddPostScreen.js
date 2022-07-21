@@ -7,12 +7,14 @@ import {
   Alert,
   ToastAndroid,
   Keyboard,
-  Touchable,
+  Pressable,
+  Image,
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePicker from 'react-native-image-crop-picker';
 import DocumentPicker from 'react-native-document-picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
@@ -35,17 +37,22 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
+import {windowWidth} from '../utils/Dimentions';
 
-const AddPostScreen = ({route, navigation}) => {
+const AddPostScreen = ({route, navigation, item}) => {
   const {user, logout} = useContext(AuthContext);
 
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
-  const [post, setPost] = useState('');
+  const [post, setPost] = useState(null);
   const [update, setUpdate] = useState(false);
   const [docId, setDocId] = useState(null);
   const [postImageUri, setPostImgUri] = useState(null);
+
+  const [data, setData] = React.useState({
+    check_textPasswordInputChange: false,
+  });
 
   var postRef = firestore().collection('posts');
 
@@ -64,6 +71,17 @@ const AddPostScreen = ({route, navigation}) => {
 
   const handleOnChangeText = (content, valueFor) => {
     if (valueFor === 'post') setPost(content);
+  };
+  const handleOnChangeTextForButton = content => {
+    if (content.trim().length >= 1) {
+      setData({
+        check_textPasswordInputChange: true,
+      });
+    } else {
+      setData({
+        check_textPasswordInputChange: false,
+      });
+    }
   };
 
   const handleKeyboardClose = () => {
@@ -234,58 +252,78 @@ const AddPostScreen = ({route, navigation}) => {
     <>
       <TouchableWithoutFeedback onPress={handleKeyboardClose}>
         <InputWrapper>
-          {image != null ? <AddImage source={{uri: image}} /> : null}
+          {image != null ? (
+            <AddImage source={{uri: image}} />
+          ) : (
+            <Pressable
+              onPress={takePhotoFromCamera}
+              style={{
+                width: '95%',
+                height: 250,
+                borderRadius: 10,
+                borderWidth: 3,
+                borderColor: 'gray',
+                borderStyle: 'dashed',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginVertical: 10,
+              }}>
+              <MaterialCommunityIcons
+                name="camera-plus"
+                size={80}
+                color="gray"
+              />
+              <Text style={{fontSize: 18, color: 'gray'}}>
+                Take a quick photo
+              </Text>
+            </Pressable>
+          )}
 
           <TextInput
             label="Write something..."
             value={post}
-            onChangeText={content => setPost(content)}
+            onChangeText={content => {
+              setPost(content);
+              handleOnChangeTextForButton(content);
+            }}
             mode="outlined"
             multiline={true}
             style={styles.input}
             activeOutlineColor="#2e64e5"
             maxLength={250}
           />
-          {/* NOT WORKING
-          {post.length || image.length >= 1 ? (
-            <StatusWrapper>
-              <AnimatedFAB
-                animateFrom="right"
-                extended="true"
-                icon="plus"
-                label="Post"
-                onPress={submitPost}
-                style={{backgroundColor: '#2e64e5'}}
-              />
-            </StatusWrapper>
-          ) : (
-            <StatusWrapper>
-              <AnimatedFAB
-                disabled={'false'}
-                animateFrom="right"
-                icon="plus"
-                extended="true"
-                label="Post"
-              />
-            </StatusWrapper>
-          )} */}
 
-          {uploading ? (
-            <StatusWrapper>
-              <Text>{transferred} % Completed!</Text>
-              <ActivityIndicator size="large" color="#0000ff" />
-            </StatusWrapper>
-          ) : (
+          {data.check_textPasswordInputChange == false && image == null ? (
             <StatusWrapper>
               <AnimatedFAB
-                animateFrom="right"
+                disabled={'true'}
                 extended="true"
                 icon="plus"
-                label="Post"
-                onPress={update ? updatePost : submitPost}
-                style={{backgroundColor: '#2e64e5'}}
+                label={'Add Document'}
               />
             </StatusWrapper>
+          ) : (
+            <>
+              {uploading ? (
+                <StatusWrapper>
+                  <Text style={{color: '#000'}}>
+                    {transferred} % Completed!
+                  </Text>
+                  <ActivityIndicator size="large" color="#0000ff" />
+                </StatusWrapper>
+              ) : (
+                <StatusWrapper>
+                  <AnimatedFAB
+                    animateFrom="right"
+                    extended="true"
+                    icon="plus"
+                    label={update ? 'Update Document' : 'Add Document'}
+                    onPress={update ? updatePost : submitPost}
+                    style={{backgroundColor: '#2e64e5'}}
+                  />
+                </StatusWrapper>
+              )}
+            </>
           )}
         </InputWrapper>
         <ActionButton buttonColor="#2e64e5">
@@ -328,6 +366,6 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 18,
-    width: 375,
+    width: '95%',
   },
 });

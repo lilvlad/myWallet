@@ -103,6 +103,19 @@ const TestScreen = ({navigation}) => {
           source={require('../assets/mywallet-logo.png')}
           style={styles.logo}
         />
+        <Animatable.Text
+          animation="fadeInUpBig"
+          duration={1000}
+          style={{
+            fontSize: 28,
+            marginBottom: 20,
+            color: '#fff',
+            textAlign: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+          }}>
+          myWallet
+        </Animatable.Text>
       </View>
 
       <View style={{flex: 1, backgroundColor: '#4A68AB'}}>
@@ -221,7 +234,7 @@ const TestScreen = ({navigation}) => {
                     <TextInput.Icon
                       name={() => (
                         <Feather
-                          name={data.secureTextEntry ? 'eye' : 'eye-off'}
+                          name={data.secureTextEntry ? 'eye-off' : 'eye'}
                           color="grey"
                           size={24}
                         />
@@ -368,10 +381,10 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   logo: {
-    height: 125,
-    width: 125,
+    height: 115,
+    width: 115,
     resizeMode: 'cover',
-    margin: 20,
+    marginTop: 20,
   },
 
   forgotButton: {

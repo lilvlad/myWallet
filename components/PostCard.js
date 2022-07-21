@@ -25,6 +25,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 import {View} from 'react-native-animatable';
 import LottieView from 'lottie-react-native';
+import {windowWidth} from '../utils/Dimentions';
 
 const PostCard = ({item, onDelete, onLike, onPress, onEdit}) => {
   const {user, logout} = useContext(AuthContext);
@@ -103,7 +104,7 @@ const PostCard = ({item, onDelete, onLike, onPress, onEdit}) => {
           <PostTime>{moment(item.postTime.toDate()).fromNow()}</PostTime>
         </UserInfoText>
       </UserInfo>
-      <PostText>{item.post}</PostText>
+      <PostText style={{width: windowWidth / 1.1}}>{item.post}</PostText>
 
       {/*{item.postImg != null ? <PostImg source={{uri: item.postImg}} /> : null}*/}
       {item.postImg != null ? (
@@ -112,7 +113,11 @@ const PostCard = ({item, onDelete, onLike, onPress, onEdit}) => {
             <ProgressiveImage
               defaultImageSource={require('../assets/default-img.jpg')}
               source={{uri: item.postImg}}
-              style={{width: 350, height: 225, borderRadius: 10}}
+              style={{
+                width: windowWidth / 1.1,
+                height: 225,
+                borderRadius: 10,
+              }}
             />
           </Pressable>
         </View>
@@ -139,12 +144,12 @@ const PostCard = ({item, onDelete, onLike, onPress, onEdit}) => {
           <InteractionText>{likeText}</InteractionText>
         </Interaction>
         <Interaction onPress={() => onEdit(item)}>
-          <MaterialIcon name="edit" size={25} />
+          <MaterialIcon name="edit" size={25} color="grey" />
           <InteractionText>Edit</InteractionText>
         </Interaction>
         {user.uid == item.userId ? (
           <Interaction onPress={() => onDelete(item.id)}>
-            <MaterialIcon name="delete" size={25} />
+            <MaterialIcon name="delete" size={25} color="grey" />
             <InteractionText>Delete</InteractionText>
           </Interaction>
         ) : null}

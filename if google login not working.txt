@@ -1,0 +1,2 @@
+If google login isn't working on released app, add this fingerprint SHA-1 to Firebase Project Settings.
+b1:2f:27:5c:0f:36:e4:b2:2d:31:0b:8e:bb:be:1b:a1:1d:02:47:ae

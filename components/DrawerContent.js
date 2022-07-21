@@ -1,21 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {
-  useTheme,
-  Drawer,
-  TouchableRipple,
-  Switch,
-  Text,
-  ScrollView,
-  SafeAreaView,
-} from 'react-native-paper';
+import {Drawer} from 'react-native-paper';
 import {UserImg, UserName} from '../styles/FeedStyles';
 import {
   DrawerContentScrollView,
   DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import {Linking} from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -25,9 +16,7 @@ import {AuthContext} from '../navigation/AuthProvider';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const DrawerContent = (props, route) => {
-  const paperTheme = useTheme();
   const {user, logout} = useContext(AuthContext);
-  const {signOut, toggleTheme} = React.useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -109,7 +98,7 @@ const DrawerContent = (props, route) => {
           <Drawer.Section>
             <DrawerItemList {...props} />
           </Drawer.Section>
-          <Drawer.Section title="Post Tabs">
+          <Drawer.Section title="Post Tabs" color="red" backgroundColor="#fff">
             <DrawerItem
               icon={({color, size}) => (
                 <Icon name="folder-image" color={color} size={size} />
@@ -206,7 +195,10 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     textAlign: 'center',
   },
-  drawerSection: {activeTintColor: 'red'},
+  drawerSection: {
+    activeTintColor: 'red',
+  },
+
   bottomDrawerSection: {
     borderTopColor: '#f4f4f4',
   },

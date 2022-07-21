@@ -451,15 +451,17 @@ const ProfileScreen = ({navigation, route}) => {
         </>
       ) : (
         <View style={styles.container} showsVerticalScrollIndicator={false}>
-          <Image
-            style={styles.userImg}
-            source={{
-              uri: userData
-                ? userData.userImg ||
-                  'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
-                : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
-            }}
-          />
+          <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
+            <Image
+              style={styles.userImg}
+              source={{
+                uri: userData
+                  ? userData.userImg ||
+                    'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg'
+                  : 'https://img.favpng.com/12/24/20/user-profile-get-em-cardiovascular-disease-zingah-png-favpng-9ctaweJEAek2WaHBszecKjXHd.jpg',
+              }}
+            />
+          </TouchableOpacity>
           <Text style={styles.userName}>
             {userData ? userData.fname || 'New' : 'New'}{' '}
             {userData ? userData.lname || 'User' : 'User'}
@@ -578,6 +580,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
+    color: '#666',
   },
   userInfoSubTitle: {
     fontSize: 12,
